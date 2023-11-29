@@ -10854,6 +10854,7 @@ dependencies = [
  "camino",
  "dunce",
  "fs-err",
+ "miette 5.10.0",
  "path-clean 1.0.1",
  "serde",
  "serde_json",
@@ -10988,7 +10989,7 @@ dependencies = [
 name = "turborepo-errors"
 version = "0.1.0"
 dependencies = [
- "id-arena",
+ "serde",
 ]
 
 [[package]]
