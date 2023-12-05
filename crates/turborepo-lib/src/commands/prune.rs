@@ -7,7 +7,7 @@ use tracing::trace;
 use turbopath::{
     AbsoluteSystemPathBuf, AnchoredSystemPath, AnchoredSystemPathBuf, RelativeUnixPath,
 };
-use turborepo_errors::Provenance;
+use turborepo_errors::{Provenance, Sourced};
 use turborepo_repository::{
     package_graph::{self, PackageGraph, WorkspaceName, WorkspaceNode},
     package_json::PackageJson,

@@ -10,7 +10,7 @@ use camino::{Utf8Components, Utf8Path, Utf8PathBuf};
 use fs_err as fs;
 use path_clean::PathClean;
 use serde::Serialize;
-use turborepo_errors::Provenance;
+use turborepo_errors::{Provenance, Sourced};
 
 use crate::{AbsoluteSystemPath, AnchoredSystemPathBuf, PathError};
 
@@ -65,6 +65,17 @@ impl Deref for AbsoluteSystemPathBuf {
     }
 }
 
+impl Sourced for AbsoluteSystemPathBuf {
+    fn with_provenance(mut self, provenance: Option<Arc<Provenance>>) -> Self {
+        self.0 = provenance;
+        self
+    }
+
+    fn provenance(&self) -> Option<Arc<Provenance>> {
+        self.0.clone()
+    }
+}
+
 impl AbsoluteSystemPathBuf {
     /// Create a new AbsoluteSystemPathBuf from `unchecked_path`.
     /// Confirms that `unchecked_path` is absolute. Does *not* convert
@@ -99,14 +110,9 @@ impl AbsoluteSystemPathBuf {
     pub fn new(unchecked_path: impl Into<String>) -> Result<Self, PathError> {
         let unchecked_path = unchecked_path.into();
         if !Path::new(&unchecked_path).is_absolute() {
-            return Err(PathError::NotAbsolute(unchecked_path));
+            return Err(PathError::NotAbsolute(unchecked_path, None));
         }
         Ok(AbsoluteSystemPathBuf(None, unchecked_path.into()))
-    }
-
-    pub fn with_provenance(mut self, provenance: Option<Arc<Provenance>>) -> Self {
-        self.0 = provenance;
-        self
     }
 
     /// Takes in a system path of unknown type. If it's absolute, returns the

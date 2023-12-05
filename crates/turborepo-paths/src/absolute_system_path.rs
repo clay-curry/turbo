@@ -15,7 +15,7 @@ use std::{
 use camino::{Utf8Component, Utf8Components, Utf8Path, Utf8PathBuf};
 use fs_err as fs;
 use path_clean::PathClean;
-use turborepo_errors::Provenance;
+use turborepo_errors::{Provenance, Sourced};
 use wax::CandidatePath;
 
 use crate::{
@@ -107,7 +107,7 @@ impl AbsoluteSystemPath {
     /// Errors if `Utf8Path` is relative.
     fn from_utf8_path(path: &Utf8Path) -> Result<&Self, PathError> {
         if path.is_relative() {
-            return Err(PathError::NotAbsolute(path.to_string()));
+            return Err(PathError::NotAbsolute(path.to_string(), None));
         }
         Ok(Self::new_unchecked(path))
     }
@@ -290,7 +290,7 @@ impl AbsoluteSystemPath {
             .as_std_path()
             .clean()
             .try_into()
-            .map_err(|_| PathError::InvalidUnicode(self.1.as_str().to_owned()))?;
+            .map_err(|_| PathError::InvalidUnicode(self.1.as_str().to_owned(), None))?;
 
         Ok(AbsoluteSystemPathBuf(self.0.clone(), cleaned_path))
     }

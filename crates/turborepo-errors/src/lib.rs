@@ -4,6 +4,27 @@ use std::{fmt::Display, sync::Arc};
 
 use serde::{Deserialize, Serialize};
 
+pub trait Sourced {
+    fn with_provenance(self, provenance: Option<Arc<Provenance>>) -> Self;
+
+    fn provenance(&self) -> Option<Arc<Provenance>>;
+}
+
+impl<T: Sourced, E: Sourced> Sourced for Result<T, E> {
+    fn with_provenance(self, provenance: Option<Arc<Provenance>>) -> Self {
+        match self {
+            Ok(value) => Ok(value.with_provenance(provenance)),
+            Err(err) => Err(err.with_provenance(provenance)),
+        }
+    }
+    fn provenance(&self) -> Option<Arc<Provenance>> {
+        match self {
+            Ok(value) => value.provenance(),
+            Err(err) => err.provenance(),
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum Provenance {
     // TODO: Add line/column numbers

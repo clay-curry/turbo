@@ -6,7 +6,7 @@ use std::{
 
 use thiserror::Error;
 use turbopath::{AbsoluteSystemPath, AbsoluteSystemPathBuf};
-use turborepo_errors::Provenance;
+use turborepo_errors::{Provenance, Sourced};
 use turborepo_ui::{cprintln, cwrite, cwriteln, BOLD, BOLD_YELLOW_REVERSE, UI, YELLOW};
 use which::which;
 
