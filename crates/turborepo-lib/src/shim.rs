@@ -380,9 +380,9 @@ impl LocalTurboState {
                         if file_name.starts_with(platform_package_name) {
                             AbsoluteSystemPathBuf::new(
                                 unplugged_base_path.join(file_name).join("node_modules"),
-                                root_path.provenance(),
                             )
                             .ok()
+                            .map(|path| path.with_provenance(root_path.provenance()))
                         } else {
                             None
                         }

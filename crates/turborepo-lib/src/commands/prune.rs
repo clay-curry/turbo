@@ -261,11 +261,8 @@ impl<'a> Prune<'a> {
             .build()
             .await?;
 
-        let out_directory = AbsoluteSystemPathBuf::from_unknown(
-            &base.repo_root,
-            output_dir,
-            Provenance::from_flag("out-dir"),
-        );
+        let out_directory = AbsoluteSystemPathBuf::from_unknown(&base.repo_root, output_dir)
+            .with_provenance(Provenance::from_flag("out-dir"));
 
         let full_directory = match docker {
             true => out_directory.join_component("full"),

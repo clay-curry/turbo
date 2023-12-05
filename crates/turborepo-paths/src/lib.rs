@@ -66,7 +66,7 @@ pub const FILE_FLAG_SEQUENTIAL_SCAN: u32 = 0x08000000;
 #[derive(Debug, Error, Diagnostic)]
 pub enum PathError {
     #[error("Path is non-UTF-8: {0}")]
-    InvalidUnicode(String, #[source_code] String),
+    InvalidUnicode(String),
     #[error("Failed to convert path")]
     FromPathBufError(#[from] camino::FromPathBufError),
     #[error("Failed to convert path")]
@@ -89,7 +89,7 @@ pub enum PathError {
 
 impl From<std::string::FromUtf8Error> for PathError {
     fn from(value: std::string::FromUtf8Error) -> Self {
-        PathError::InvalidUnicode(value.utf8_error().to_string(), String::new())
+        PathError::InvalidUnicode(value.utf8_error().to_string())
     }
 }
 

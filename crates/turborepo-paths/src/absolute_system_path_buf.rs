@@ -24,7 +24,7 @@ impl TryFrom<PathBuf> for AbsoluteSystemPathBuf {
     type Error = PathError;
 
     fn try_from(path: PathBuf) -> Result<Self, Self::Error> {
-        Self::new(Utf8PathBuf::try_from(path)?, None)
+        Self::new(Utf8PathBuf::try_from(path)?)
     }
 }
 
@@ -33,7 +33,7 @@ impl TryFrom<&Path> for AbsoluteSystemPathBuf {
 
     fn try_from(path: &Path) -> Result<Self, Self::Error> {
         let utf8_path: &Utf8Path = path.try_into()?;
-        Self::new(utf8_path.to_owned(), None)
+        Self::new(utf8_path.to_owned())
     }
 }
 
@@ -41,7 +41,7 @@ impl TryFrom<&str> for AbsoluteSystemPathBuf {
     type Error = PathError;
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
-        Self::new(Utf8PathBuf::from(value), None)
+        Self::new(Utf8PathBuf::from(value))
     }
 }
 impl Borrow<AbsoluteSystemPath> for AbsoluteSystemPathBuf {
@@ -96,15 +96,17 @@ impl AbsoluteSystemPathBuf {
     /// #[cfg(not(windows))]
     /// assert_eq!(absolute_path.as_path(), Utf8Path::new("/Users/user"));
     /// ```
-    pub fn new(
-        unchecked_path: impl Into<String>,
-        provenance: Option<Arc<Provenance>>,
-    ) -> Result<Self, PathError> {
+    pub fn new(unchecked_path: impl Into<String>) -> Result<Self, PathError> {
         let unchecked_path = unchecked_path.into();
         if !Path::new(&unchecked_path).is_absolute() {
             return Err(PathError::NotAbsolute(unchecked_path));
         }
-        Ok(AbsoluteSystemPathBuf(provenance, unchecked_path.into()))
+        Ok(AbsoluteSystemPathBuf(None, unchecked_path.into()))
+    }
+
+    pub fn with_provenance(mut self, provenance: Option<Arc<Provenance>>) -> Self {
+        self.0 = provenance;
+        self
     }
 
     /// Takes in a system path of unknown type. If it's absolute, returns the

@@ -2,7 +2,6 @@ use std::{
     fs::OpenOptions,
     io::{self, Write},
     process::{Command, Stdio},
-    sync::Arc,
 };
 
 use thiserror::Error;
@@ -143,8 +142,8 @@ fn filename_and_extension(
     cwd: &AbsoluteSystemPath,
     raw_filename: &str,
 ) -> Result<(AbsoluteSystemPathBuf, String), Error> {
-    let graph_file =
-        AbsoluteSystemPathBuf::from_unknown(cwd, raw_filename, Provenance::from_flag("graph"));
+    let graph_file = AbsoluteSystemPathBuf::from_unknown(cwd, raw_filename)
+        .with_provenance(Provenance::from_flag("graph"));
     if let Some(extension) = graph_file.extension() {
         let extension = extension.to_string();
         Ok((graph_file, extension))

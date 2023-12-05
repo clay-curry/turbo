@@ -285,12 +285,12 @@ impl AbsoluteSystemPath {
     ///    by / at the beginning of a path.
     /// 5. Leave intact .. elements that begin a non-rooted path.
     pub fn clean(&self) -> Result<AbsoluteSystemPathBuf, PathError> {
-        let cleaned_path = self.1.as_std_path().clean().try_into().map_err(|_| {
-            PathError::InvalidUnicode(
-                self.1.as_str().to_owned(),
-                self.0.as_ref().map(|p| p.to_string()).unwrap_or_default(),
-            )
-        })?;
+        let cleaned_path = self
+            .1
+            .as_std_path()
+            .clean()
+            .try_into()
+            .map_err(|_| PathError::InvalidUnicode(self.1.as_str().to_owned()))?;
 
         Ok(AbsoluteSystemPathBuf(self.0.clone(), cleaned_path))
     }
@@ -357,8 +357,9 @@ impl AbsoluteSystemPath {
             "expected absolute path to start with root/prefix"
         );
 
-        AbsoluteSystemPathBuf::new(stack.into_iter().collect::<Utf8PathBuf>(), self.0.clone())
+        AbsoluteSystemPathBuf::new(stack.into_iter().collect::<Utf8PathBuf>())
             .expect("collapsed path should be absolute")
+            .with_provenance(self.0.clone())
     }
 
     // TODO: consider consolidating with `relation_to_path` below
